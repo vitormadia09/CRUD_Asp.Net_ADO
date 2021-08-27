@@ -1,0 +1,220 @@
+﻿@model CadastroCliente.Models.IndexViewModel
+@*@model IndexViewModel*@
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="card-body">
+    <div>
+        <button id="btnCadastrarPessoa" class="btn btn-success mr-1" onclick="goToCriar()">Cadastrar</button>
+
+    </div>
+
+    <table class="table" id="tblPessoas">
+        <thead>
+            <tr>
+                <th>ID</th>
+
+                <th>Nome</th>
+
+                <th>RG</th>
+
+                <th>CPF</th>
+
+                <th>Telefone</th>
+
+                <th>Nome da Mãe</th>
+
+                <th>Nome do Pai</th>
+
+                <th>Email</th>
+
+                <th>Editar</th>
+
+                <th>Deletar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cliente in Model.Clientes)
+            {
+                <tr>
+                    <td>@cliente.ClienteId</td>
+
+                    <td>@cliente.Nome</td>
+
+                    <td>@cliente.RG</td>
+
+                    <td>@cliente.CPF</td>
+
+                    <td>@cliente.Telefone</td>
+
+                    <td>@cliente.NomeMae</td>
+
+                    <td>@cliente.NomePai</td>
+
+                    <td>@cliente.Email</td>
+
+                    <td>
+                        <a href="/Home/Editar?id=@cliente.ClienteId.ToString()" class="btn btn-primary mr-1">Editar</a>
+                    </td>
+
+                    <td>
+                        @*<a asp-action="Excluir" class="btn btn-danger" asp-rout-id="@cliente.ClienteId">Excluir</a>*@
+
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-danger mr-1" data-toggle="modal" data-target="#excluirModal-@cliente.ClienteId">
+                            Excluir
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="excluirModal-@cliente.ClienteId" tabindex="-1" role="dialog" aria-labelledby="ExcluirModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="excluirModalLabel">Excluir Cliente</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Deseja realmente excluir o cliente @cliente.Nome ?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+                                        @*<button type="button" onclick="" id="@cliente.ClienteId" class="btn btn-danger Delete" data-dismiss="modal">Sim</button>*@
+                                        <a onclick="btnExcluir(@cliente.ClienteId);" href="#" class="btn btn-danger Delete" id="@cliente.ClienteId">Sim</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+         //Ajax Excluir
+        //function btnExcluir(id) {
+        //    $.ajax({
+        //        type: "POST",
+        //        url: "./HomeController",
+        //        data: 'ClienteId:' + id,
+        //        contentType: "application/json; charset=utf-8",
+        //        dataType: "json",
+        //        success: function (response) {
+        //            row.remove();
+        //        }
+        //    });
+        //}
+
+
+        //$(".btnExcluir").on("click", function (event) {
+        //    event.preventDefault();
+        //    var id = $("#ClienteId").attr("data-id");
+        //    $.ajax({
+        //        url: "/Home/Excluir/" + id,
+        //        type: 'delete',
+        //        data: { id: id }
+        //    });
+        //})
+
+        @*$(document).delegate('.Delete', 'click', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: "post",
+                url: "@Url.Action("Delete", "Index")",
+                ajaxsync: true,
+                /*data: { id: $('input#idField').val() },*/
+                success: function (response) {
+                    alert("Cliente excluído!");
+
+                    //Perform redirect-->-->
+                    window.location.replace("@Url.Action('Index')");
+                <!--<!--},
+                error: function (data) {
+                    alert(data.x);
+                }
+            });*@
+
+        function btnExcluir(id) {
+            var idCliente = id;
+            console.log(idCliente);
+            $.ajax({
+
+                type: "DELETE",
+                url: "@Url.Action("Delete", "Home")",
+                data: { id: idCliente},
+                    ajaxsync: true,
+                    success: function (response) {
+                        alert("Cliente excluído!");
+                        location.reload(true);
+                    },
+                    error: function (data) {
+                        alert(data);
+                    }
+                });
+            }
+
+
+      
+
+
+
+
+
+
+    </script>
+
+
+
+    @*<div class="row">
+            <div id="grid-result" class="col-12 table-responsive">
+                <ngx-datatable >
+                    <ngx-datatable-column [name]="ID"></ngx-datatable-column>
+                    <ngx-datatable-column [name]="Nome"></ngx-datatable-column>
+                    <ngx-datatable-column [name]="RG"></ngx-datatable-column>
+                    <ngx-datatable-column [name]="CPF"></ngx-datatable-column>
+                    <ngx-datatable-column [name]="Telefone"></ngx-datatable-column>
+                    <ngx-datatable-column [name]="Nome da Mãe"></ngx-datatable-column>
+                    <ngx-datatable-column [name]="Nome do Pai"></ngx-datatable-column>
+                    <ngx-datatable-column [name]="">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <div>
+                                <button></button>
+                            </div>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column [name]="">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <div>
+                                <button></button>
+                            </div>
+                        </ng-template>
+                    </ngx-datatable-column>
+                </ngx-datatable>
+            </div>
+        </div>*@
+</div>
+
+<script type="text/javascript">
+    function goToCriar() {
+        console.log('Ready disparado');
+        window.open("/Home/Criar", "_self");
+    }
+
+    function goToEditar() {
+        console.log('Ready disparado');
+        window.location.replace("/Home/Editar");
+    }
+
+    function goToHome() {
+        window.location("_self")
+    }
+</script>
